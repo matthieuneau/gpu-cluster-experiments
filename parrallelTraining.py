@@ -5,6 +5,14 @@ from models import HeavyModel
 from torch import optim
 from torchvision import datasets, transforms
 from torch.utils.data import Subset, DataLoader
+from yaml import safe_load
+
+try:
+    with open("config.yaml", "r") as file:
+        config = safe_load(file)
+except FileNotFoundError:
+    raise FileNotFoundError("The config.yaml file was not found. Check the path.")
+
 
 # Initialize the model, loss function, and optimizer
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -24,7 +32,7 @@ train_dataset = datasets.CIFAR10(
     transform=transform,
 )
 train_dataset = Subset(train_dataset, range(16384))
-train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=config["batch_size"], shuffle=True)
 
 
 def train_model(model, train_loader, criterion, optimizer, epochs=1):
